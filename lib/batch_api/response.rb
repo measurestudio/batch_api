@@ -22,6 +22,10 @@ module BatchApi
       end
     end
 
+    def to_json(options = {})
+      MultiJson.dump(as_json(options))
+    end
+
     private
 
     def process_body(body_pieces)
@@ -35,4 +39,3 @@ module BatchApi
     end
   end
 end
-

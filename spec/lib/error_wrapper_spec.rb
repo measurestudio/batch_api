@@ -3,7 +3,7 @@ require 'batch_api/error_wrapper'
 
 describe BatchApi::ErrorWrapper do
   let(:exception) {
-    StandardError.new(Faker::Lorem.words(3)).tap do |e|
+    StandardError.new(Faker::Lorem.words.join).tap do |e|
       e.set_backtrace(Kernel.caller)
     end
   }
@@ -59,10 +59,10 @@ describe BatchApi::ErrorWrapper do
 
   describe ".expose_backtrace?" do
     it "returns false if ENV['RACK_ENV'] == 'production'" do
-      ENV['RACK_ENV'] == 'production'
+      ENV['RACK_ENV'] = 'production'
       expect(BatchApi::ErrorWrapper.expose_backtrace?).to be_falsey
 
-      ENV['RACK_ENV'] == 'development'
+      ENV['RACK_ENV'] = 'test'
       expect(BatchApi::ErrorWrapper.expose_backtrace?).to be_truthy
     end
   end

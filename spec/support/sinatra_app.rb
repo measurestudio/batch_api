@@ -2,7 +2,7 @@ require 'sinatra/base'
 require 'rack/contrib'
 
 class SinatraApp < Sinatra::Base
-  use Rack::PostBodyContentTypeParser
+  use Rack::JSONBodyParser
   use BatchApi::RackMiddleware
 
   get "/endpoint" do
@@ -51,4 +51,3 @@ class SinatraApp < Sinatra::Base
     end
   end
 end
-
