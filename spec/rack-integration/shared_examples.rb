@@ -56,12 +56,7 @@ shared_examples_for "integrating with a server" do
     status: 422,
     body: {
       "result" => "GET OK",
-      "params" => get_params.merge(
-        BatchApi.rails? ? {
-          "controller" => "endpoints",
-          "action" => "get"
-        } : {}
-      )
+      "params" => get_params
     },
     headers: { "GET" => "hello" }
   } }
@@ -81,12 +76,7 @@ shared_examples_for "integrating with a server" do
     status: 203,
     body: {
       "result" => "POST OK",
-      "params" => post_params.merge(
-        BatchApi.rails? ? {
-          "controller" => "endpoints",
-          "action" => "post"
-        } : {}
-      )
+      "params" => post_params
     },
     headers: { "POST" => "guten tag" }
   } }

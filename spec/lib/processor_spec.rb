@@ -117,20 +117,4 @@ describe BatchApi::Processor do
       expect(processor.execute!["results"]).to eq(stubby)
     end
   end
-
-  describe ".operation_klass" do
-    it "returns BatchApi::Operation::Rack if !Rails" do
-      allow(BatchApi).to receive(:rails?).and_return(false)
-      expect(BatchApi::Processor.operation_klass).to eq(
-        BatchApi::Operation::Rack
-      )
-    end
-
-    it "returns BatchApi::Operation::Rails if Rails" do
-      allow(BatchApi).to receive(:rails?).and_return(true)
-      expect(BatchApi::Processor.operation_klass).to eq(
-        BatchApi::Operation::Rails
-      )
-    end
-  end
 end

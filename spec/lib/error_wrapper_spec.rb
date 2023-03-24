@@ -58,10 +58,11 @@ describe BatchApi::ErrorWrapper do
   end
 
   describe ".expose_backtrace?" do
-    it "returns false if Rails.env.production?" do
-      allow(Rails).to receive(:env).and_return(double(test?: false, production?: true, development?: false))
+    it "returns false if ENV['RACK_ENV'] == 'production'" do
+      ENV['RACK_ENV'] == 'production'
       expect(BatchApi::ErrorWrapper.expose_backtrace?).to be_falsey
-      allow(Rails.env).to receive(:production?).and_return(false)
+
+      ENV['RACK_ENV'] == 'development'
       expect(BatchApi::ErrorWrapper.expose_backtrace?).to be_truthy
     end
   end
