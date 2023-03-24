@@ -6,9 +6,6 @@ source "http://rubygems.org"
 gemspec
 
 group :development, :test do
-  # Testing infrastructure
-  gem 'guard'
-  gem 'guard-rspec'
   gem 'faker'
   gem 'test-unit'
   gem 'timecop'
@@ -17,19 +14,10 @@ group :development, :test do
   gem 'pry'
 
   # testing the request infrastructure
-  gem "rails", "~> 4.2"
   gem "sinatra"
   gem "rspec"
-  gem "rspec-rails"
   gem "rack-contrib"
-  # for CRuby, Rubinius, including Windows and RubyInstaller
-  gem "sqlite3", :platform => [:ruby, :mswin, :mingw]
-  # for JRuby
-  gem "jdbc-sqlite3", :platform => :jruby
-
-  group :darwin do
-    # OS X integration
-    gem "ruby_gntp"
-    gem "rb-fsevent"
-  end
+  gem "rake"
+  gem "activesupport"
+  gem "rack-test"
 end

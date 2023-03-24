@@ -17,12 +17,4 @@ module BatchApi
   def self.config
     @config ||= Configuration.new
   end
-
-  # Public: are we in Rails?  This partly exists just so that you
-  # can stub it in the tests.
-  #
-  # Returns true if Rails is a defined constant, false otherwise.
-  def self.rails?
-    defined?(Rails)
-  end
 end

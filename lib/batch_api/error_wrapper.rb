@@ -36,9 +36,8 @@ module BatchApi
     end
 
     # Internal: whether the backtrace should be exposed in the response.
-    # Currently Rails-specific, needs to be generalized (to ENV["RACK_ENV"])?
     def self.expose_backtrace?
-      !Rails.env.production?
+      !ENV['RACK_ENV'] == 'production'
     end
   end
 end
