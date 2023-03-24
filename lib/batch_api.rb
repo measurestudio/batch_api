@@ -1,3 +1,5 @@
+require 'multi_json'
+
 require 'batch_api/configuration'
 require 'batch_api/version'
 require 'batch_api/utils'
