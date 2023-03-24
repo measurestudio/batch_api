@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_runtime_dependency("middleware")
+  s.add_runtime_dependency('multi_json')
 end
