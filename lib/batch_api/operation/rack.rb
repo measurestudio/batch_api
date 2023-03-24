@@ -13,7 +13,7 @@ module BatchApi
       def initialize(op, base_env, app)
         @op = op
 
-        @method = op["method"] || "get"
+        @method = op["method"] || "GET"
         @url = op["url"]
         @params = op["params"] || {}
         @headers = op["headers"] || {}
@@ -44,7 +44,7 @@ module BatchApi
       # manually and feels clunky and brittle, but is mostly likely fine, though
       # there are one or two environment parameters not yet adjusted.
       def process_env
-        path, qs = @url.split("?")
+        uri = URI.parse(@url)
 
         # Headers
         headrs = (@headers || {}).inject({}) do |heads, (k, v)|
@@ -61,15 +61,21 @@ module BatchApi
           # not all servers provide REQUEST_URI -- Pow, for instance, doesn't
           @env["REQUEST_URI"] = @env["REQUEST_URI"].gsub(/#{BatchApi.config.endpoint}.*/, @url)
         end
-        @env["REQUEST_PATH"] = path
+        @env["REQUEST_PATH"] = uri.path
         @env["ORIGINAL_FULLPATH"] = @env["PATH_INFO"] = @url
 
+        qs = if @method == 'GET'
+          get_params = ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
+          CGI.escape(::Rack::Utils.build_nested_query(get_params))
+        else
+          uri.query
+        end
         @env["rack.request.query_string"] = qs
         @env["QUERY_STRING"] = qs
 
         # parameters
         @env["rack.request.form_hash"] = @params
-        @env["rack.request.query_hash"] = @method == "get" ? @params : nil
+        @env["rack.request.query_hash"] = @method == "GET" ? get_params : nil
       end
     end
   end

@@ -18,10 +18,10 @@ Making a batch request:
 
 {
   ops: [
-    {method: "get",    url: "/patrons"},
-    {method: "post",   url: "/orders/new",  params: {dish_id: 123}},
-    {method: "get",    url: "/oh/no/error", headers: {break: "fast"}},
-    {method: "delete", url: "/patrons/456"}
+    {method: "GET",    url: "/patrons"},
+    {method: "POST",   url: "/orders/new",  params: {dish_id: 123}},
+    {method: "GET",    url: "/oh/no/error", headers: {break: "fast"}},
+    {method: "DELETE", url: "/patrons/456"}
   ],
   sequential: true
 }

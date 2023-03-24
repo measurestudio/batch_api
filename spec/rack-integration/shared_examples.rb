@@ -1,6 +1,6 @@
-shared_examples_for "a get request" do
+shared_examples_for "a GET request" do
   it "returns the body as objects" do
-    @result = JSON.parse(response.body)["results"][0]
+    @result = JSON.parse(last_response.body)["results"][0]
     expect(@result["body"]).to eq(get_result[:body])
   end
 
@@ -41,7 +41,7 @@ shared_examples_for "integrating with a server" do
 
   let(:get_request) { {
     url: "/endpoint",
-    method: "get",
+    method: "GET",
     headers: get_headers,
     params: get_params
   } }
@@ -67,7 +67,7 @@ shared_examples_for "integrating with a server" do
 
   let(:post_request) { {
     url: "/endpoint",
-    method: "post",
+    method: "POST",
     headers: post_headers,
     params: post_params
   } }
@@ -83,7 +83,7 @@ shared_examples_for "integrating with a server" do
 
   let(:error_request) { {
     url: "/endpoint/error",
-    method: "get"
+    method: "GET"
   } }
 
   let(:error_response) { {
@@ -93,10 +93,10 @@ shared_examples_for "integrating with a server" do
 
   let(:missing_request) { {
     url: "/dont/work",
-    method: "delete"
+    method: "DELETE"
   } }
 
-  let(:missing_response) { {
+  let(:missing_last_response) { {
     status: 404,
     body: {}
   } }
@@ -107,7 +107,7 @@ shared_examples_for "integrating with a server" do
 
   let(:parameter_request) { {
     url: "/endpoint/capture/#{parameter}",
-    method: "get"
+    method: "GET"
   } }
 
   let(:parameter_result) { {
@@ -118,7 +118,7 @@ shared_examples_for "integrating with a server" do
 
   let(:silent_request) { {
     url: "/endpoint",
-    method: "post",
+    method: "POST",
     silent: true
   } }
 
@@ -154,38 +154,38 @@ shared_examples_for "integrating with a server" do
   end
 
   it "returns a 200" do
-    expect(response.status).to eq(200)
+    expect(last_response.status).to eq(200)
   end
 
   it "includes results" do
-    expect(JSON.parse(response.body)["results"]).to be_a(Array)
+    expect(JSON.parse(last_response.body)["results"]).to be_a(Array)
   end
 
   context "for a get request" do
     describe "with an explicit get" do
       before :each do
-        @result = JSON.parse(response.body)["results"][0]
+        @result = JSON.parse(last_response.body)["results"][0]
       end
 
-      it_should_behave_like "a get request"
+      it_should_behave_like "a GET request"
     end
 
     describe "with no method" do
       before :each do
-        @result = JSON.parse(response.body)["results"][7]
+        @result = JSON.parse(last_response.body)["results"][7]
       end
 
-      it_should_behave_like "a get request"
+      it_should_behave_like "a GET request"
     end
   end
 
   context "for a request with parameters" do
     describe "the response" do
       before :each do
-        @result = JSON.parse(response.body)["results"][4]
+        @result = JSON.parse(last_response.body)["results"][4]
       end
 
-      it "properly parses the URL segment as a paramer" do
+      it "properly parses the URL segment as a parameter" do
         expect(@result["body"]).to eq(parameter_result[:body])
       end
     end
@@ -194,7 +194,7 @@ shared_examples_for "integrating with a server" do
   context "for a post request" do
     describe "the response" do
       before :each do
-        @result = JSON.parse(response.body)["results"][1]
+        @result = JSON.parse(last_response.body)["results"][1]
       end
 
       it "returns the body as objects (since DecodeJsonBody is default)" do
@@ -217,7 +217,7 @@ shared_examples_for "integrating with a server" do
 
   context "for a request that returns an error" do
     before :each do
-      @result = JSON.parse(response.body)["results"][2]
+      @result = JSON.parse(last_response.body)["results"][2]
     end
 
     it "returns the right status" do
@@ -233,7 +233,7 @@ shared_examples_for "integrating with a server" do
 
   context "for a request that returns error" do
     before :each do
-      @result = JSON.parse(response.body)["results"][3]
+      @result = JSON.parse(last_response.body)["results"][3]
     end
 
     it "returns the right status" do
@@ -243,7 +243,7 @@ shared_examples_for "integrating with a server" do
 
   context "for a silent request" do
     before :each do
-      @result = JSON.parse(response.body)["results"][5]
+      @result = JSON.parse(last_response.body)["results"][5]
     end
 
     it "returns nothing" do
@@ -253,7 +253,7 @@ shared_examples_for "integrating with a server" do
 
   context "for a silent request that causes an error" do
     before :each do
-      @result = JSON.parse(response.body)["results"][6]
+      @result = JSON.parse(last_response.body)["results"][6]
     end
 
     it "returns a regular result" do

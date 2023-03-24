@@ -16,7 +16,9 @@ module BatchApi
     # Raises ArgumentError if no operations are provided (nil or []).
     #
     # Returns the new Processor instance.
-    def initialize(request, app)
+    def initialize(request, app, operation_klass: Operation::Rack)
+      @operation_klass = operation_klass
+
       @app = app
       @request = request
       @env = request.env
@@ -82,7 +84,7 @@ module BatchApi
           "#{ops.length} were provided"
       else
         ops.map do |op|
-          Operation::Rack.new(op, @env, @app)
+          @operation_klass.new(op, @env, @app)
         end
       end
     end

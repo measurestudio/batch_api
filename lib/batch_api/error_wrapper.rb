@@ -37,7 +37,7 @@ module BatchApi
 
     # Internal: whether the backtrace should be exposed in the response.
     def self.expose_backtrace?
-      !ENV['RACK_ENV'] == 'production'
+      ENV['RACK_ENV'] != 'production'
     end
   end
 end
