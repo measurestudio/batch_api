@@ -8,21 +8,17 @@ source 'http://rubygems.org'
 gemspec
 
 group :development, :test do
-  gem 'byebug', platforms: %i[mri_20 mri_21]
-  gem 'debugger', platforms: [:mri_19]
-  gem 'faker'
-  gem 'pry'
-  gem 'rubocop'
-  gem 'rubocop-performance'
-  gem 'rubocop-rspec'
-  gem 'test-unit'
-  gem 'timecop'
+  gem 'faker', '~> 3.1'
+  gem 'pry', '~> 0.14'
+  gem 'rubocop', '~> 1.48'
+  gem 'rubocop-performance', '~> 1.16'
+  gem 'rubocop-rspec', '~> 2.19'
+  gem 'timecop', '~> 0.9.6'
 
-  # testing the request infrastructure
-  gem 'activesupport'
-  gem 'rack-contrib'
-  gem 'rack-test'
-  gem 'rake'
-  gem 'rspec'
-  gem 'sinatra'
+  gem 'activesupport', '~> 7.0'
+  gem 'rack-contrib', '~> 2.3'
+  gem 'rack-test', '~> 2.1'
+  gem 'rake', '~> 13.0'
+  gem 'rspec', '~> 3.12'
+  gem 'sinatra', '~> 3.0'
 end
