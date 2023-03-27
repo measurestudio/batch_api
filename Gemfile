@@ -15,7 +15,6 @@ group :development, :test do
   gem 'rubocop-rspec', '~> 2.19'
   gem 'timecop', '~> 0.9.6'
 
-  gem 'activesupport', '~> 7.0'
   gem 'rack-contrib', '~> 2.3'
   gem 'rack-test', '~> 2.1'
   gem 'rake', '~> 13.0'
