@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ENV['RACK_ENV'] ||= 'test'
 
 require 'rspec'
@@ -12,9 +14,9 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 RSpec.configure do |config|
   config.color = true
 
-  config.before :each do
+  config.before do
     BatchApi.config.limit = 20
-    BatchApi.config.endpoint = "/batch"
+    BatchApi.config.endpoint = '/batch'
     BatchApi.config.verb = :post
   end
 end

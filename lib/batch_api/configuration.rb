@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'batch_api/internal_middleware'
 
 module BatchApi
@@ -17,20 +19,18 @@ module BatchApi
   # (adding headers, decoding JSON, etc.)
   CONFIGURATION_OPTIONS = {
     verb: :post,
-    endpoint: "/batch",
+    endpoint: '/batch',
     limit: 50,
     batch_middleware: InternalMiddleware::DEFAULT_BATCH_MIDDLEWARE,
-    operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE
-  }
+    operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE,
+  }.freeze
 
   # Batch API Configuration
-  class Configuration < Struct.new(*CONFIGURATION_OPTIONS.keys)
+  Configuration = Struct.new(*CONFIGURATION_OPTIONS.keys) do
     # Public: initialize a new configuration option and apply the defaults.
     def initialize
       super
-      CONFIGURATION_OPTIONS.each {|k, v| self[k] = v}
+      CONFIGURATION_OPTIONS.each { |k, v| self[k] = v }
     end
   end
 end
-
-

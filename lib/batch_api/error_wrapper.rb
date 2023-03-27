@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   # Public: wrap an error thrown during a batch operation.
   # This has a body class and a cookies accessor and can
@@ -13,13 +15,13 @@ module BatchApi
     # to clients as JSON.
     def body
       message = if self.class.expose_backtrace?
-        {
-          message: @error.message,
-          backtrace: @error.backtrace
-        }
-      else
-        { message: @error.message }
-      end
+                  {
+                    message: @error.message,
+                    backtrace: @error.backtrace,
+                  }
+                else
+                  { message: @error.message }
+                end
       { error: message }
     end
 

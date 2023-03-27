@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   # Public: a response from an internal operation in the Batch API.
   # It contains all the details that are needed to describe the call's
@@ -14,7 +16,7 @@ module BatchApi
     end
 
     # Public: convert the response to JSON.  nil values are ignored.
-    def as_json(options = {})
+    def as_json(_options = {})
       {}.tap do |result|
         result[:body] = @body unless @body.nil?
         result[:headers] = @headers unless @headers.nil?
@@ -33,9 +35,7 @@ module BatchApi
       # not be suitable for JSON serialization
       # (I'm looking at you, ActionDispatch::Response)
       # so turn it into a string
-      base_body = ""
-      body_pieces.each {|str| base_body << str}
-      base_body
+      body_pieces.join
     end
   end
 end

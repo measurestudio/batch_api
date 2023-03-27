@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'batch_api/processor/sequential'
 require 'batch_api/operation'
 
@@ -22,8 +24,8 @@ module BatchApi
       @app = app
       @request = request
       @env = request.env
-      @ops = self.process_ops
-      @options = self.process_options
+      @ops = process_ops
+      @options = process_options
     end
 
     # Public: the processing strategy to use, based on the options
@@ -48,7 +50,7 @@ module BatchApi
         ops: @ops,
         rack_env: @env,
         rack_app: @app,
-        options: @options
+        options: @options,
       }
     end
 
@@ -60,7 +62,7 @@ module BatchApi
     # Returns a hash ready to go to the user
     def format_response(operation_results)
       {
-        "results" => operation_results
+        'results' => operation_results,
       }
     end
 
@@ -75,17 +77,14 @@ module BatchApi
     #
     # Returns an array of BatchApi::Operation objects
     def process_ops
-      ops = @request.params.delete("ops")
+      ops = @request.params.delete('ops')
       if !ops || ops.empty?
-        raise Errors::NoOperationsError, "No operations provided"
+        raise Errors::NoOperationsError, 'No operations provided'
       elsif ops.length > BatchApi.config.limit
         raise Errors::OperationLimitExceeded,
-          "Only #{BatchApi.config.limit} operations can be submitted at once, " +
-          "#{ops.length} were provided"
+          "Only #{BatchApi.config.limit} operations can be submitted at once, #{ops.length} were provided"
       else
-        ops.map do |op|
-          @operation_klass.new(op, @env, @app)
-        end
+        ops.map { |op| @operation_klass.new(op, @env, @app) }
       end
     end
 
@@ -99,9 +98,7 @@ module BatchApi
     #
     # Returns the valid options hash.
     def process_options
-      unless @request.params["sequential"]
-        raise Errors::BadOptionError, "Sequential flag is currently required"
-      end
+      raise Errors::BadOptionError, 'Sequential flag is currently required' unless @request.params['sequential']
       @request.params
     end
   end

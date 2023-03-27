@@ -1,11 +1,12 @@
+# frozen_string_literal: true
+
 require 'batch_api/response'
 
 module BatchApi
   # Public: an individual batch operation.
   module Operation
     class Rack
-      attr_accessor :method, :url, :params, :headers
-      attr_accessor :env, :app, :result, :options
+      attr_accessor :method, :url, :params, :headers, :env, :app, :result, :options
 
       # Public: create a new Batch Operation given the specifications for a batch
       # operation (as defined above) and the request environment for the main
@@ -13,15 +14,13 @@ module BatchApi
       def initialize(op, base_env, app)
         @op = op
 
-        @method = op["method"] || "GET"
-        @url = op["url"]
-        @params = op["params"] || {}
-        @headers = op["headers"] || {}
+        @method = op['method'] || 'GET'
+        @url = op['url']
+        @params = op['params'] || {}
+        @headers = op['headers'] || {}
         @options = op
 
-        raise Errors::MalformedOperationError,
-          "BatchAPI operation must include method (received #{@method.inspect}) " +
-          "and url (received #{@url.inspect})" unless @method && @url
+        ensure_method_and_url!
 
         @app = app
         # deep_dup to avoid unwanted changes across requests
@@ -34,8 +33,8 @@ module BatchApi
         process_env
         begin
           response = @app.call(@env)
-        rescue => err
-          response = BatchApi::ErrorWrapper.new(err).render
+        rescue StandardError => e
+          response = BatchApi::ErrorWrapper.new(e).render
         end
         BatchApi::Response.new(response)
       end
@@ -44,38 +43,53 @@ module BatchApi
       # manually and feels clunky and brittle, but is mostly likely fine, though
       # there are one or two environment parameters not yet adjusted.
       def process_env
-        uri = URI.parse(@url)
+        apply_headers
+        apply_method
+        apply_path_and_query_string
+      end
 
-        # Headers
-        headrs = (@headers || {}).inject({}) do |heads, (k, v)|
-          heads.tap {|h| h["HTTP_" + k.gsub(/\-/, "_").upcase] = v}
+      def apply_headers
+        local_headers = (@headers || {}).inject({}) do |heads, (k, v)|
+          heads.tap { |h| h["HTTP_#{k.tr('-', '_').upcase}"] = v }
         end
         # preserve original headers unless explicitly overridden
-        @env.merge!(headrs)
+        @env.merge!(local_headers)
+      end
 
-        # method
-        @env["REQUEST_METHOD"] = @method.upcase
+      def apply_method
+        @env['REQUEST_METHOD'] = @method.upcase
+      end
 
-        # path and query string
-        if @env["REQUEST_URI"]
-          # not all servers provide REQUEST_URI -- Pow, for instance, doesn't
-          @env["REQUEST_URI"] = @env["REQUEST_URI"].gsub(/#{BatchApi.config.endpoint}.*/, @url)
-        end
-        @env["REQUEST_PATH"] = uri.path
-        @env["ORIGINAL_FULLPATH"] = @env["PATH_INFO"] = @url
+      def apply_path_and_query_string
+        uri = URI.parse(@url)
 
-        qs = if @method == 'GET'
+        @env['REQUEST_URI'] = @env['REQUEST_URI'].gsub(/#{BatchApi.config.endpoint}.*/, @url) if @env['REQUEST_URI']
+        @env['REQUEST_PATH'] = uri.path
+        @env['ORIGINAL_FULLPATH'] = @env['PATH_INFO'] = @url
+
+        qs = extract_query_string(uri)
+        @env['rack.request.query_string'] = @env['QUERY_STRING'] = qs
+
+        @env['rack.request.form_hash'] = @params
+        @env['rack.request.query_hash'] = if @method == 'GET'
+                                            ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
+                                          end
+      end
+
+      def extract_query_string(uri)
+        if @method == 'GET'
           get_params = ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
           CGI.escape(::Rack::Utils.build_nested_query(get_params))
         else
           uri.query
         end
-        @env["rack.request.query_string"] = qs
-        @env["QUERY_STRING"] = qs
+      end
 
-        # parameters
-        @env["rack.request.form_hash"] = @params
-        @env["rack.request.query_hash"] = @method == "GET" ? get_params : nil
+      def ensure_method_and_url!
+        return if @method && @url
+        raise Errors::MalformedOperationError,
+          "BatchAPI operation must include method (received #{@method.inspect}) " \
+          "and url (received #{@url.inspect})"
       end
     end
   end
