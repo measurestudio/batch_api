@@ -20,5 +20,6 @@ group :development, :test do
   gem 'rack-test', '~> 2.1'
   gem 'rake', '~> 13.0'
   gem 'rspec', '~> 3.12'
+  gem 'simplecov', '~> 0.22', require: false
   gem 'sinatra', '~> 3.0'
 end
