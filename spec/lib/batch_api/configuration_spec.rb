@@ -1,18 +1,21 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module BatchApi
   describe Configuration do
-    let(:config) { Configuration.new }
+    let(:config) { described_class.new }
 
-    describe "options" do
+    describe 'options' do
       {
         verb: :post,
-        endpoint: "/batch",
+        endpoint: '/batch',
         limit: 50,
         batch_middleware: InternalMiddleware::DEFAULT_BATCH_MIDDLEWARE,
-        operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE
+        operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE,
       }.each_pair do |option, default|
-        opt, defa = option, default
+        opt = option
+        defa = default
         describe "##{opt}" do
           it "has an accessor for #{opt}" do
             stubby = double

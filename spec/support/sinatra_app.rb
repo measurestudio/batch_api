@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra/base'
 require 'rack/contrib'
 
@@ -5,37 +7,37 @@ class SinatraApp < Sinatra::Base
   use Rack::JSONBodyParser
   use BatchApi::RackMiddleware
 
-  get "/endpoint" do
-    headers["GET"] = "hello"
+  get '/endpoint' do
+    headers['GET'] = 'hello'
     # including this in the body would mess the body up
     # due to the other headers inserted
-    headers["REQUEST_HEADERS"] = header_output
+    headers['REQUEST_HEADERS'] = header_output
     content_type :json
 
     status 422
     {
-      result: "GET OK",
-      params: params.except(:endpoint)
+      result: 'GET OK',
+      params: params.except(:endpoint),
     }.to_json
   end
 
-  get "/endpoint/capture/:captured" do
+  get '/endpoint/capture/:captured' do
     content_type :json
-    {result: params[:captured]}.to_json
+    { result: params[:captured] }.to_json
   end
 
-  post "/endpoint" do
-    headers["POST"] = "guten tag"
-    headers["REQUEST_HEADERS"] = header_output
+  post '/endpoint' do
+    headers['POST'] = 'guten tag'
+    headers['REQUEST_HEADERS'] = header_output
     content_type :json
     status 203
     {
-      result: "POST OK",
-      params: params.except(:endpoint)
+      result: 'POST OK',
+      params: params.except(:endpoint),
     }.to_json
   end
 
-  get "/endpoint/error" do
+  get '/endpoint/error' do
     raise StandardError
   end
 
@@ -47,7 +49,7 @@ class SinatraApp < Sinatra::Base
     # env has a ton of additional information we don't want
     # and that reference the request itself, causing an infinite loop
     env.inject({}) do |h, (k, v)|
-      h.tap {|hash| hash[k.to_s] = v.to_s if k =~ /HTTP_/}
+      h.tap { |hash| hash[k.to_s] = v.to_s if k.include?('HTTP_') }
     end
   end
 end

@@ -1,4 +1,6 @@
 #!/usr/bin/env rake
+# frozen_string_literal: true
+
 begin
   require 'bundler/setup'
 rescue LoadError
@@ -25,7 +27,7 @@ Bundler::GemHelper.install_tasks
 
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new do |t|
-  t.rspec_opts = ["--color", '--format doc', '--order rand']
+  t.rspec_opts = ['--color', '--format doc', '--order rand']
 end
 
-task :default => :spec
+task default: :spec

@@ -1,4 +1,6 @@
-source "http://rubygems.org"
+# frozen_string_literal: true
+
+source 'http://rubygems.org'
 
 # Declare your gem's dependencies in batch_api.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -6,18 +8,21 @@ source "http://rubygems.org"
 gemspec
 
 group :development, :test do
+  gem 'byebug', platforms: %i[mri_20 mri_21]
+  gem 'debugger', platforms: [:mri_19]
   gem 'faker'
+  gem 'pry'
+  gem 'rubocop'
+  gem 'rubocop-performance'
+  gem 'rubocop-rspec'
   gem 'test-unit'
   gem 'timecop'
-  gem 'debugger', :platforms => [:mri_19]
-  gem 'byebug', :platforms => [:mri_20, :mri_21]
-  gem 'pry'
 
   # testing the request infrastructure
-  gem "sinatra"
-  gem "rspec"
-  gem "rack-contrib"
-  gem "rake"
-  gem "activesupport"
-  gem "rack-test"
+  gem 'activesupport'
+  gem 'rack-contrib'
+  gem 'rack-test'
+  gem 'rake'
+  gem 'rspec'
+  gem 'sinatra'
 end

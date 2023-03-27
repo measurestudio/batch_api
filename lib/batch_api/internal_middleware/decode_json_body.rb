@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   module InternalMiddleware
     # Public: a middleware that decodes the body of any individual batch
@@ -10,16 +12,14 @@ module BatchApi
 
       def call(env)
         @app.call(env).tap do |result|
-          if should_decode?(result)
-            result.body = MultiJson.load(result.body)
-          end
+          result.body = MultiJson.load(result.body) if should_decode?(result)
         end
       end
 
       private
 
       def should_decode?(result)
-        result.headers["Content-Type"] =~ /^application\/json/ &&
+        result.headers['Content-Type'] =~ %r{^application/json} &&
           # don't try to decode an empty response
           result.body.present?
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'middleware'
 require 'batch_api/processor/sequential'
 require 'batch_api/processor/executor'
@@ -52,11 +54,11 @@ module BatchApi
   module InternalMiddleware
     # Public: the default internal middlewares to be run around the entire
     # operation.
-    DEFAULT_BATCH_MIDDLEWARE = Proc.new {}
+    DEFAULT_BATCH_MIDDLEWARE = proc {}
 
     # Public: the default internal middlewares to be run around each batch
     # operation.
-    DEFAULT_OPERATION_MIDDLEWARE = Proc.new do
+    DEFAULT_OPERATION_MIDDLEWARE = proc do
       # Decode JSON response bodies, so they're not double-encoded.
       use InternalMiddleware::ResponseFilter
       use InternalMiddleware::DecodeJsonBody
@@ -67,18 +69,19 @@ module BatchApi
     def self.batch_stack(processor)
       Middleware::Builder.new do
         # evaluate these in the context of the middleware stack
-        self.instance_eval &BatchApi.config.batch_middleware
+        instance_eval(&BatchApi.config.batch_middleware)
         # for now, everything's sequential, but that will change
         use processor.strategy
       end
     end
+
     #
     # Public: the middleware stack to use for processing each batch operation.
     def self.operation_stack
       Middleware::Builder.new do
         # evaluate the operation middleware in the context of the middleware
         # stack
-        self.instance_eval &BatchApi.config.operation_middleware
+        instance_eval(&BatchApi.config.operation_middleware)
         # and end with actually executing the batch request
         use Processor::Executor
       end

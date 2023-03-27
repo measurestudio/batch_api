@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   module Errors
     # Public: a module that tags Batch API errors and provides a default
@@ -5,7 +7,7 @@ module BatchApi
     module BatchError
       # Public: the status code for this type of error.
       # Subclasses can change this as desired.
-      def status_code; 500; end
+      def status_code = 500
     end
 
     # Public: an error thrown if an invalid option is
@@ -13,21 +15,21 @@ module BatchApi
     class BadOptionError < ArgumentError
       include BatchError
       # Public: the status code for this error.
-      def status_code; 422; end
+      def status_code = 422
     end
 
     # Public: an error thrown if too many operations are provided.
     class OperationLimitExceeded < ArgumentError
       include BatchError
       # Public: the status code for this error.
-      def status_code; 422; end
+      def status_code = 422
     end
 
     # Public: an error thrown if no operations are provided.
     class NoOperationsError < ArgumentError
       include BatchError
       # Public: the status code for this error.
-      def status_code; 422; end
+      def status_code = 422
     end
 
     # Public: an error thrown if one of the batch operations
@@ -35,7 +37,7 @@ module BatchApi
     class MalformedOperationError < ArgumentError
       include BatchError
       # Public: the status code for this error.
-      def status_code; 422; end
+      def status_code = 422
     end
   end
 end

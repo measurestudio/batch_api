@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   class Processor
     class Sequential
@@ -20,10 +22,9 @@ module BatchApi
           # execute the individual request inside the operation-specific
           # middeware, then clear out the current op afterward
           middleware = InternalMiddleware.operation_stack
-          middleware.call(env).tap {|r| env.delete(:op) }
+          middleware.call(env).tap { |_r| env.delete(:op) }
         end
       end
     end
   end
 end
-

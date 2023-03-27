@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module BatchApi
   module InternalMiddleware
     # Public: a batch middleware which surpresses the response from a call.  If you
@@ -15,7 +17,7 @@ module BatchApi
       # remove any output for a successful response.
       def call(env)
         @app.call(env).tap do |result|
-          if env[:op].options["silent"] && (200...299).include?(result.status)
+          if env[:op].options['silent'] && (200...299).cover?(result.status)
             # we have success and a request for silence
             # so remove all the content before proceeding
             result.status = result.body = result.headers = nil
