@@ -19,9 +19,7 @@ module BatchApi
       private
 
       def should_decode?(result)
-        result.headers['Content-Type'] =~ %r{^application/json} &&
-          # don't try to decode an empty response
-          result.body.present?
+        result.headers['Content-Type'] =~ %r{^application/json} && !result.body&.empty?
       end
     end
   end

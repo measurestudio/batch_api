@@ -12,7 +12,6 @@ end
 require 'rspec'
 require 'faker'
 require 'timecop'
-require 'active_support'
 
 require_relative '../lib/batch_api'
 # Load support files
