@@ -20,6 +20,7 @@ describe SinatraApp do
   before do
     BatchApi.config.endpoint = '/batch'
     BatchApi.config.verb = :post
+    BatchApi.config.limit = 1
     allow(BatchApi::ErrorWrapper).to receive(:expose_backtrace?).and_return(false)
   end
 
@@ -87,6 +88,36 @@ describe SinatraApp do
       it 'verifies that the right headers were received' do
         result = JSON.parse(last_response.body)['results'][0]
         expect(result['headers']['REQUEST_HEADERS']).to include(headerize({ 'FOO' => 'bar' }))
+      end
+    end
+
+    describe 'with no ops object' do
+      before do
+        post '/batch', {
+          sequential: true,
+        }.to_json, 'CONTENT_TYPE' => 'application/json'
+      end
+
+      it 'returns an appropriate error' do
+        expect(JSON.parse(last_response.body)).to eq({ 'error' => { 'message' => 'No operations provided' } })
+      end
+    end
+
+    describe 'with too many ops objects' do
+      before do
+        post '/batch', {
+          ops: [
+            { url: '/endpoint', headers: { 'foo' => 'bar' }, params: { 'other' => 'value' } },
+            { url: '/endpoint', headers: { 'foo' => 'bar' }, params: { 'other' => 'value' } },
+          ],
+          sequential: true,
+        }.to_json, 'CONTENT_TYPE' => 'application/json'
+      end
+
+      it 'returns an appropriate error' do
+        expect(JSON.parse(last_response.body)).to eq({
+          'error' => { 'message' => 'Only 1 operations can be submitted at once, 2 were provided' },
+        })
       end
     end
   end

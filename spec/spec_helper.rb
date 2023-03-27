@@ -2,6 +2,13 @@
 
 ENV['RACK_ENV'] ||= 'test'
 
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter %r{^/spec/}
+  end
+end
+
 require 'rspec'
 require 'faker'
 require 'timecop'
