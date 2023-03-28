@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency('middleware', '~> 0.1')
   s.add_runtime_dependency('multi_json', '~> 1.15')
+  s.add_runtime_dependency('parallel', '~> 1.22')
 end

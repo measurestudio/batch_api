@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'middleware'
 require 'batch_api/processor/sequential'
 require 'batch_api/processor/executor'
 require 'batch_api/internal_middleware/decode_json_body'

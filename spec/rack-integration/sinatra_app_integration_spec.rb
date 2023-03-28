@@ -17,11 +17,72 @@ describe SinatraApp do
     end
   end
 
+  let(:limit) { 1 }
+
   before do
     BatchApi.config.endpoint = '/batch'
     BatchApi.config.verb = :post
-    BatchApi.config.limit = 1
+    BatchApi.config.limit = limit
     allow(BatchApi::ErrorWrapper).to receive(:expose_backtrace?).and_return(false)
+  end
+
+  context 'when issued an array of parallel requests' do
+    subject(:result) { JSON.parse(last_response.body)['results'] }
+
+    let(:limit) { 7 }
+
+    before do
+      post '/batch', {
+        ops: [
+          { url: '/endpoint', method: 'GET', headers: { 'foo' => 'bar' }, params: { 'other' => 'value' } },
+          { url: '/endpoint', headers: { 'foo' => 'bar' }, params: { 'other' => 'value' } },
+          { url: '/longboi', headers: { 'foo' => 'bar' }, params: { 'other' => 'value' } },
+          {
+            url: '/endpoint',
+            method: 'POST',
+            headers: { 'POST' => 'guten tag' },
+            params: { 'other' => 'value' },
+          },
+          {
+            url: '/endpoint/error',
+            method: 'GET',
+          },
+          {
+            url: '/very/missing/such/wow',
+            method: 'DELETE',
+            silent: true,
+          },
+          {
+            url: '/very/missing/such/wow',
+            method: 'DELETE',
+          },
+        ],
+      }.to_json, 'CONTENT_TYPE' => 'application/json'
+    end
+
+    it 'returns all results' do
+      expect(result.size).to eq 7
+    end
+
+    it 'returns a get request in the right position' do
+      expect(result[0]['body']).to eq({ 'result' => 'GET OK', 'params' => { 'other' => 'value' } })
+    end
+
+    it 'returns a long-running request in the right position' do
+      expect(result[2]['body']).to eq({ 'result' => 'GET OK', 'params' => { 'other' => 'value' } })
+    end
+
+    it 'returns a post request in the right position' do
+      expect(result[3]['body']).to eq({ 'result' => 'POST OK', 'params' => { 'other' => 'value' } })
+    end
+
+    it 'returns a request resulting in a server error in the right position' do
+      expect(result[4]['body']).to eq({ 'error' => { 'message' => 'StandardError' } })
+    end
+
+    it 'returns a request resulting in a not found error in the right position' do
+      expect(result[5]['status']).to eq(404)
+    end
   end
 
   context 'when issued a get request' do

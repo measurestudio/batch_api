@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'multi_json'
+require 'middleware'
+require 'parallel'
 
 require 'batch_api/configuration'
 require 'batch_api/version'

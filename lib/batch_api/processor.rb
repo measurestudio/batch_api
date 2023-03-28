@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'batch_api/processor/sequential'
+require 'batch_api/processor/parallel'
 require 'batch_api/operation'
 
 module BatchApi
@@ -25,14 +26,17 @@ module BatchApi
       @request = request
       @env = request.env
       @ops = process_ops
-      @options = process_options
+      @options = @request.params
     end
 
     # Public: the processing strategy to use, based on the options
     # provided in BatchApi setup and the request.
-    # Currently only Sequential is supported.
     def strategy
-      BatchApi::Processor::Sequential
+      @strategy ||= if @options['sequential']
+                      BatchApi::Processor::Sequential
+                    else
+                      BatchApi::Processor::Parallel
+                    end
     end
 
     # Public: run the batch operations according to the appropriate strategy.
@@ -86,20 +90,6 @@ module BatchApi
       else
         ops.map { |op| @operation_klass.new(op, @env, @app) }
       end
-    end
-
-    # Internal: Processes any other provided options for validity.
-    # Currently, the :sequential option is REQUIRED (until parallel
-    # implementation is created).
-    #
-    # options - an options hash
-    #
-    # Raises Errors::BadOptionError if sequential is not provided.
-    #
-    # Returns the valid options hash.
-    def process_options
-      raise Errors::BadOptionError, 'Sequential flag is currently required' unless @request.params['sequential']
-      @request.params
     end
   end
 end
