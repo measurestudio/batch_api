@@ -21,6 +21,21 @@ class SinatraApp < Sinatra::Base
     }.to_json
   end
 
+  get '/longboi' do
+    sleep 0.3
+    headers['GET'] = 'hello'
+    # including this in the body would mess the body up
+    # due to the other headers inserted
+    headers['REQUEST_HEADERS'] = header_output
+    content_type :json
+
+    status 422
+    {
+      result: 'GET OK',
+      params: params.except(:endpoint),
+    }.to_json
+  end
+
   get '/endpoint/capture/:captured' do
     content_type :json
     { result: params[:captured] }.to_json

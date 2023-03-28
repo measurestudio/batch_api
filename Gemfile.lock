@@ -4,6 +4,7 @@ PATH
     batch_api (0.3.0)
       middleware (~> 0.1)
       multi_json (~> 1.15)
+      parallel (~> 1.22)
 
 GEM
   remote: http://rubygems.org/
