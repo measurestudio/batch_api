@@ -10,7 +10,7 @@ module BatchApi
 
       # Returns an array of BatchApi::Response objects.
       def call(env)
-        ::Parallel.map(env[:ops], in_processes: BatchApi.config.processes) do |op|
+        ::Parallel.map(env[:ops], in_threads: BatchApi.config.processes) do |op|
           local_env = BatchApi::Utils.deep_dup(env)
           local_env[:op] = op
 
