@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/arsduo/batch_api.svg?branch=master)](http://travis-ci.org/arsduo/batch_api)
-
 ## What's this?
 
 A gem that provides a RESTful Batch API for Rails and other Rack applications.
@@ -15,15 +13,16 @@ Making a batch request:
 ```
 # POST /batch
 # Content-Type: application/json
+# Body:
 
 {
-  ops: [
-    {method: "GET",    url: "/patrons"},
-    {method: "POST",   url: "/orders/new",  params: {dish_id: 123}},
-    {method: "GET",    url: "/oh/no/error", headers: {break: "fast"}},
-    {method: "DELETE", url: "/patrons/456"}
+  "ops": [
+    { "method": "GET",    "url": "/patrons"},
+    { "method": "POST",   "url": "/orders/new",  params: {dish_id: 123}},
+    { "method": "GET",    "url": "/oh/no/error", headers: {break: "fast"}},
+    { "method": "DELETE", "url": "/patrons/456"}
   ],
-  sequential: true
+  "sequential": true
 }
 ```
 
@@ -65,10 +64,6 @@ These individual operations are supplied as the "ops" parameter in the
 overall request.  Other options include:
 
 * _sequential_ - execute all operations sequentially, rather than in parallel.
-*This parameter is currently REQUIRED and must be set to true.* (In the future
-the Batch API will offer parallel processing for thread-safe apps, and hence
-this parameter must be supplied in order to explicitly preserve expected
-behavior.)
 
 Other options may be provided in the future for both the global request
 and individual operations.
@@ -107,6 +102,7 @@ config.middleware.use BatchApi::RackMiddleware do |batch_config|
   batch_config.batch_middleware = Proc.new { }
   # default middleware stack run for each individual operation
   batch_config.operation_middleware = Proc.new { }
+  batch_config.processes = 5 # how many processes to spawn for executing parallel requests, default 4
 end
 ```
 
@@ -151,7 +147,7 @@ we decided to implement an API-based solution.
 There are two main approaches to writing batch APIs:
 
 * A limited, specialized batch endpoint (or endpoints), which usually handles
-  updates and creates.  DHH sketched out such a bulk update/create endpoint
+  updates and creates. DHH sketched out such a bulk update/create endpoint
   for Rails 3.2 [in a gist](https://gist.github.com/981520) last year.
 * A general-purpose RESTful API that can handle anything in your application,
   a la the Facebook Batch API.
@@ -214,20 +210,6 @@ or decoding JSON bodies for individual requests (this latter comes
 pre-included).  Check out the lib/batch_api/internal_middleware.rb for more
 information.
 
-## To Do
-
-The core of the Batch API is complete and solid, and so ready to go that it's
-in use at 6Wunderkinder already :P
-
-Here are some immediate tasks:
-
-* Test against additional frameworks (beyond Rails and Sinatra)
-* Write more usage docs / create a wiki.
-* Add additional features inspired by the Facebook API, such as the ability to
-  surpress output for individual requests, etc.
-* Add RDoc to the spec task and ensure all methods are documented.
-* Research and implement parallelization and dependency management.
-
 ## Thanks
 
 To 6Wunderkinder, for all their support for this open-source project, and their
@@ -237,7 +219,3 @@ To Facebook, for providing inspiration and a great implementation in this and
 many other things.
 
 To [JT Archie](http://github.com/jtarchie) for his help and feedback.
-
-## Issues? Questions? Ideas?
-
-Open a ticket or send a pull request!
