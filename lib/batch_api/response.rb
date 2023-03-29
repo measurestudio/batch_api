@@ -16,16 +16,12 @@ module BatchApi
     end
 
     # Public: convert the response to JSON.  nil values are ignored.
-    def as_json(_options = {})
+    def to_h(_options = {})
       {}.tap do |result|
         result[:body] = @body unless @body.nil?
         result[:headers] = @headers unless @headers.nil?
         result[:status] = @status unless @status.nil?
       end
-    end
-
-    def to_json(options = {})
-      MultiJson.dump(as_json(options))
     end
 
     private

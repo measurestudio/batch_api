@@ -29,9 +29,9 @@ describe BatchApi::Response do
     end
   end
 
-  describe '#as_json' do
+  describe '#to_h' do
     it 'creates the expected hash' do
-      expect(response.as_json).to eq({
+      expect(response.to_h).to eq({
         body: response.body,
         status: response.status,
         headers: response.headers,
@@ -39,17 +39,17 @@ describe BatchApi::Response do
     end
 
     it 'accepts options' do
-      expect(response.as_json(foo: :bar)).not_to be_nil
+      expect(response.to_h(foo: :bar)).not_to be_nil
     end
 
     it 'leaves out items that are blank' do
       response.status = response.body = nil
-      expect(response.as_json).to eq({ headers: raw_response[1] })
+      expect(response.to_h).to eq({ headers: raw_response[1] })
     end
 
     it 'includes items that are false' do
       response.body = false
-      expect(response.as_json[:body]).to be(false)
+      expect(response.to_h[:body]).to be(false)
     end
   end
 end

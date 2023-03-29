@@ -25,8 +25,8 @@ module BatchApi
       @app = app
       @request = request
       @env = request.env
+      @options = parsed_body.merge(@request.params)
       @ops = process_ops
-      @options = @request.params
     end
 
     # Public: the processing strategy to use, based on the options
@@ -66,7 +66,7 @@ module BatchApi
     # Returns a hash ready to go to the user
     def format_response(operation_results)
       {
-        'results' => operation_results,
+        'results' => operation_results.map(&:to_h),
       }
     end
 
@@ -81,7 +81,7 @@ module BatchApi
     #
     # Returns an array of BatchApi::Operation objects
     def process_ops
-      ops = @request.params.delete('ops')
+      ops = @options.delete('ops')
       if !ops || ops.empty?
         raise Errors::NoOperationsError, 'No operations provided'
       elsif ops.length > BatchApi.config.limit
@@ -90,6 +90,15 @@ module BatchApi
       else
         ops.map { |op| @operation_klass.new(op, @env, @app) }
       end
+    end
+
+    def parsed_body
+      body = @request.body.read
+      return {} if body.empty?
+
+      MultiJson.load(body)
+    rescue MultiJson::ParseException
+      {}
     end
   end
 end

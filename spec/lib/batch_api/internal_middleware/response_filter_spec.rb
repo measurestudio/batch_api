@@ -22,9 +22,9 @@ describe BatchApi::InternalMiddleware::ResponseFilter do
   describe '#call' do
     context 'with results with silent' do
       context 'with successful (200-299) results' do
-        it 'empties the response so its as_json is empty' do
+        it 'empties the response so its to_h is empty' do
           surpressor.call(env)
-          expect(result.as_json).to eq({})
+          expect(result.to_h).to eq({})
         end
       end
 
