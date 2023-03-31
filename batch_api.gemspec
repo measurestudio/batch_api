@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib}/**/*'] + %w[MIT-LICENSE Rakefile changelog.md readme.md]
   s.test_files = Dir['spec/**/*']
 
-  s.required_ruby_version = '3.2.1'
+  s.required_ruby_version = '3.2.2'
 
   s.add_runtime_dependency('middleware', '~> 0.1')
   s.add_runtime_dependency('multi_json', '~> 1.15')
