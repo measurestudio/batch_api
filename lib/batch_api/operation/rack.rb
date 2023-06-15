@@ -18,6 +18,7 @@ module BatchApi
         @url = op['url']
         @params = op['params'] || {}
         @headers = op['headers'] || {}
+        @body = op['body'] || ''
         @options = op
 
         ensure_method_and_url!
@@ -31,6 +32,7 @@ module BatchApi
       # occurs, it returns the same results as Rails would.
       def execute
         process_env
+
         begin
           response = @app.call(@env)
         rescue StandardError => e
@@ -46,6 +48,8 @@ module BatchApi
         apply_headers
         apply_method
         apply_path_and_query_string
+        apply_form
+        apply_body
       end
 
       def apply_headers
@@ -69,11 +73,26 @@ module BatchApi
 
         qs = extract_query_string(uri)
         @env['rack.request.query_string'] = @env['QUERY_STRING'] = qs
+      end
 
+      def apply_form
+        uri = URI.parse(@url)
         @env['rack.request.form_hash'] = @params
+        @env['rack.request.form_input'] = @env['rack.input']
         @env['rack.request.query_hash'] = if @method == 'GET'
                                             ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
                                           end
+      end
+
+      def apply_body
+        return unless %w[POST PUT PATCH].include?(@method)
+        return if @body.empty?
+
+        @env.update(
+          ::Rack::RACK_INPUT => StringIO.new(@body),
+          ::Rack::RACK_REQUEST_FORM_INPUT => StringIO.new(@body),
+          ::Rack::RACK_REQUEST_FORM_HASH => @params.merge(MultiJson.load(@body))
+        )
       end
 
       def extract_query_string(uri)
