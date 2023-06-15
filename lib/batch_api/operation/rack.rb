@@ -61,27 +61,27 @@ module BatchApi
       end
 
       def apply_method
-        @env['REQUEST_METHOD'] = @method.upcase
+        @env[::Rack::REQUEST_METHOD] = @method.upcase
       end
 
       def apply_path_and_query_string
         uri = URI.parse(@url)
 
         @env['REQUEST_URI'] = @env['REQUEST_URI'].gsub(/#{BatchApi.config.endpoint}.*/, @url) if @env['REQUEST_URI']
-        @env['REQUEST_PATH'] = uri.path
-        @env['ORIGINAL_FULLPATH'] = @env['PATH_INFO'] = @url
+        @env[::Rack::REQUEST_PATH] = uri.path
+        @env['ORIGINAL_FULLPATH'] = @env[::Rack::PATH_INFO] = @url
 
         qs = extract_query_string(uri)
-        @env['rack.request.query_string'] = @env['QUERY_STRING'] = qs
+        @env[::Rack::RACK_REQUEST_QUERY_STRING] = @env[::Rack::QUERY_STRING] = qs
       end
 
       def apply_form
         uri = URI.parse(@url)
-        @env['rack.request.form_hash'] = @params
-        @env['rack.request.form_input'] = @env['rack.input']
-        @env['rack.request.query_hash'] = if @method == 'GET'
-                                            ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
-                                          end
+        @env[::Rack::RACK_REQUEST_FORM_HASH] = @params
+        @env[::Rack::RACK_REQUEST_FORM_INPUT] = @env[::Rack::RACK_INPUT]
+        @env[::Rack::RACK_REQUEST_QUERY_HASH] = if @method == 'GET'
+                                                  ::Rack::Utils.parse_nested_query(uri.query).merge(@params)
+                                                end
       end
 
       def apply_body
