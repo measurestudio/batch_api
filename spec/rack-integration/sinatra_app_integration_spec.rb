@@ -224,6 +224,36 @@ describe SinatraApp do
     end
   end
 
+  context 'when issued a post request with body' do
+    before do
+
+      post '/batch', {
+        ops: [
+          {
+            url: '/endpoint/post_param',
+            method: 'POST',
+            body: MultiJson.dump({ 'param' => 'bar' }),
+          },
+        ],
+        sequential: true,
+      }.to_json, 'CONTENT_TYPE' => 'application/json'
+
+    end
+
+    describe 'the response' do
+
+      it 'returns the body as objects (since DecodeJsonBody is default)' do
+        expect(JSON.parse(last_response.body)['results'][0]['body']).to eq({
+          'result' => 'bar',
+        })
+      end
+
+      it 'returns the expected status' do
+        expect(JSON.parse(last_response.body)['results'][0]['status']).to eq(200)
+      end
+    end
+  end
+
   context 'when issued a request that results in a server error' do
     before do
       post '/batch', {

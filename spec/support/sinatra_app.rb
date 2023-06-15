@@ -2,10 +2,12 @@
 
 require 'sinatra/base'
 require 'rack/contrib'
+require 'sinatra/param'
 
 class SinatraApp < Sinatra::Base
-  use Rack::JSONBodyParser
   use BatchApi::RackMiddleware
+  use Rack::JSONBodyParser
+  helpers Sinatra::Param
 
   get '/endpoint' do
     headers['GET'] = 'hello'
@@ -50,6 +52,13 @@ class SinatraApp < Sinatra::Base
       result: 'POST OK',
       params: params.except(:endpoint),
     }.to_json
+  end
+
+  post '/endpoint/post_param' do
+    param :param, String, required: true
+    content_type :json
+    status 200
+    { result: params[:param] }.to_json
   end
 
   get '/endpoint/error' do

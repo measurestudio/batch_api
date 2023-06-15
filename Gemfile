@@ -21,4 +21,5 @@ group :development, :test do
   gem 'rspec', '~> 3.12'
   gem 'simplecov', '~> 0.22', require: false
   gem 'sinatra', '~> 3.0'
+  gem 'sinatra-param'
 end
