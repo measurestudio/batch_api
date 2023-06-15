@@ -88,6 +88,8 @@ module BatchApi
         return unless %w[POST PUT PATCH].include?(@method)
         return if @body.empty?
 
+        @body = MultiJson.dump(@body) if @body.is_a?(Hash)
+
         @env.update(
           ::Rack::RACK_INPUT => StringIO.new(@body),
           ::Rack::RACK_REQUEST_FORM_INPUT => StringIO.new(@body),
