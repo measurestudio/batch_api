@@ -10,6 +10,7 @@ gemspec
 group :development, :test do
   gem 'faker', '~> 3.1'
   gem 'pry', '~> 0.14'
+  gem 'racc', '~> 1.4'
   gem 'rubocop', '~> 1.48'
   gem 'rubocop-performance', '~> 1.16'
   gem 'rubocop-rspec', '~> 2.19'
