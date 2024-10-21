@@ -32,6 +32,8 @@ module BatchApi
       # (I'm looking at you, ActionDispatch::Response)
       # so turn it into a string
       body_pieces.join
+    ensure
+      body_pieces.close if body_pieces.respond_to?(:close)
     end
   end
 end
