@@ -6,6 +6,11 @@ module BatchApi
   # Public: an individual batch operation.
   module Operation
     class Rack
+      INGRESS_QUEUE_HEADERS = %w[
+        HTTP_X_REQUEST_START
+        HTTP_X_REQUEST_START_CF
+      ].freeze
+
       attr_accessor :method, :url, :params, :headers, :env, :app, :result, :options
 
       # Public: create a new Batch Operation given the specifications for a batch
@@ -24,8 +29,7 @@ module BatchApi
         ensure_method_and_url!
 
         @app = app
-        # deep_dup to avoid unwanted changes across requests
-        @env = BatchApi::Utils.deep_dup(base_env)
+        @env = inner_env(base_env)
       end
 
       # Execute a batch request, returning a BatchResponse object.  If an error
@@ -56,8 +60,10 @@ module BatchApi
         local_headers = (@headers || {}).inject({}) do |heads, (k, v)|
           heads.tap { |h| h["HTTP_#{k.tr('-', '_').upcase}"] = v }
         end
-        # preserve original headers unless explicitly overridden
+        # Preserve original headers unless explicitly overridden, except for
+        # ingress queue timestamps which are invalid for internal operations.
         @env.merge!(local_headers)
+        remove_ingress_queue_headers(@env)
       end
 
       def apply_method
@@ -104,6 +110,19 @@ module BatchApi
         else
           uri.query
         end
+      end
+
+      def inner_env(base_env)
+        # deep_dup to avoid unwanted changes across requests
+        BatchApi::Utils.deep_dup(base_env).tap do |env|
+          # These timestamps describe ingress for the outer batch request, not
+          # for an internal operation executed later from the batch queue.
+          remove_ingress_queue_headers(env)
+        end
+      end
+
+      def remove_ingress_queue_headers(env)
+        INGRESS_QUEUE_HEADERS.each { |header| env.delete(header) }
       end
 
       def ensure_method_and_url!

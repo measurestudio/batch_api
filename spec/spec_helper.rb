@@ -35,5 +35,6 @@ RSpec.configure do |config|
     BatchApi.config.limit = 20
     BatchApi.config.endpoint = '/batch'
     BatchApi.config.verb = :post
+    BatchApi.config.operation_queue_observer = nil
   end
 end

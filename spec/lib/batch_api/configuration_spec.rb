@@ -13,6 +13,7 @@ module BatchApi
         limit: 50,
         batch_middleware: InternalMiddleware::DEFAULT_BATCH_MIDDLEWARE,
         operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE,
+        operation_queue_observer: nil,
       }.each_pair do |option, default|
         opt = option
         defa = default

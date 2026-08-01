@@ -39,6 +39,8 @@ describe BatchApi::Operation::Rack do
       'HTTP_HOST' => 'localhost:3000',
       'HTTP_ACCEPT' => '*/*',
       'HTTP_PREVIOUS_HEADERS' => 'value',
+      'HTTP_X_REQUEST_START' => 't=1000',
+      'HTTP_X_REQUEST_START_CF' => '1001',
       'rack.version' => [1, 1],
       'rack.input' => StringIO.new('{"ops":{}}'),
       'rack.errors' => $stderr,
@@ -99,14 +101,29 @@ describe BatchApi::Operation::Rack do
     end
 
     it 'does a deep dup of the env' do
-      expect(operation.env).to eq(env)
+      expected_env = env.except('HTTP_X_REQUEST_START', 'HTTP_X_REQUEST_START_CF')
+      expect(operation.env).to eq(expected_env)
 
-      flat_env = env.to_a.flatten
+      flat_env = expected_env.to_a.flatten
       operation.env.to_a.flatten.each_with_index do |obj, index|
         # this is a rough test for deep dup -- make sure the objects
         # that aren't symbols aren't actually the same objects in memory
         expect(obj.object_id).not_to eq(flat_env[index].object_id) if obj.is_a?(Hash) || obj.is_a?(Array)
       end
+    end
+
+    it 'does not inherit outer request queue timing headers' do
+      expect(operation.env).not_to include('HTTP_X_REQUEST_START', 'HTTP_X_REQUEST_START_CF')
+      expect(env).to include('HTTP_X_REQUEST_START' => 't=1000', 'HTTP_X_REQUEST_START_CF' => '1001')
+    end
+
+    it 'does not allow operation headers to restore ingress queue timestamps' do
+      operation.headers = {
+        'X-Request-Start' => 't=2000',
+        'X-Request-Start-Cf' => '2001',
+      }
+
+      expect(operation.tap(&:process_env).env).not_to include(*described_class::INGRESS_QUEUE_HEADERS)
     end
 
     it 'raises a MalformedOperationError if URL is missing' do

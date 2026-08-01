@@ -39,5 +39,17 @@ describe BatchApi::Processor::Sequential do
     it 'returns the results of the calls' do
       expect(sequential.call(env)).to eq(call_results)
     end
+
+    it 'observes each queued operation with the batch size' do
+      events = []
+      BatchApi.config.operation_queue_observer = proc { |event, payload| events << [event, payload] }
+
+      sequential.call(env)
+
+      expect(events.count { |event, _payload| event == :batch_started }).to eq(1)
+      expect(events.count { |event, _payload| event == :operation_started }).to eq(3)
+      expect(events.count { |event, _payload| event == :operation_finished }).to eq(3)
+      expect(events.first).to eq([:batch_started, { batch_size: 3 }])
+    end
   end
 end

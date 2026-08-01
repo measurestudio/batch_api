@@ -3,6 +3,7 @@
 require 'batch_api/processor/sequential'
 require 'batch_api/processor/parallel'
 require 'batch_api/operation'
+require 'batch_api/operation_telemetry'
 
 module BatchApi
   class Processor

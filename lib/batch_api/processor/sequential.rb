@@ -15,14 +15,18 @@ module BatchApi
       #
       # Returns an array of BatchApi::Response objects.
       def call(env)
-        env[:ops].collect do |op|
-          # set the current op
-          env[:op] = op
+        telemetry = OperationTelemetry.new(env[:ops].length)
 
-          # execute the individual request inside the operation-specific
-          # middeware, then clear out the current op afterward
-          middleware = InternalMiddleware.operation_stack
-          middleware.call(env).tap { |_r| env.delete(:op) }
+        env[:ops].collect do |op|
+          telemetry.observe do
+            # set the current op
+            env[:op] = op
+
+            # execute the individual request inside the operation-specific
+            # middeware, then clear out the current op afterward
+            middleware = InternalMiddleware.operation_stack
+            middleware.call(env).tap { |_r| env.delete(:op) }
+          end
         end
       end
     end

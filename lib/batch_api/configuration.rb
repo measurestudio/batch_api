@@ -17,6 +17,8 @@ module BatchApi
   # (such as authentication, etc.)
   # - per_op_middleware: any middlewares to run around each individual request
   # (adding headers, decoding JSON, etc.)
+  # - operation_queue_observer: an optional callable invoked for batch and
+  # operation lifecycle events with queue and concurrency telemetry
   CONFIGURATION_OPTIONS = {
     verb: :post,
     endpoint: '/batch',
@@ -24,6 +26,7 @@ module BatchApi
     batch_middleware: InternalMiddleware::DEFAULT_BATCH_MIDDLEWARE,
     operation_middleware: InternalMiddleware::DEFAULT_OPERATION_MIDDLEWARE,
     processes: 4,
+    operation_queue_observer: nil,
   }.freeze
 
   # Batch API Configuration

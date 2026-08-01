@@ -103,8 +103,33 @@ config.middleware.use BatchApi::RackMiddleware do |batch_config|
   # default middleware stack run for each individual operation
   batch_config.operation_middleware = Proc.new { }
   batch_config.processes = 5 # how many processes to spawn for executing parallel requests, default 4
+
+  # optional lifecycle observer; queue_duration uses monotonic-clock seconds
+  batch_config.operation_queue_observer = lambda do |event, payload|
+    case event
+    when :batch_started
+      Metrics.gauge('batch_api.batch_size', payload[:batch_size])
+    when :operation_started
+      Metrics.observe('batch_api.operation_queue_duration', payload[:queue_duration])
+      Metrics.gauge('batch_api.active_operations', payload[:active_operations])
+    when :operation_finished
+      Metrics.gauge('batch_api.active_operations', payload[:active_operations])
+    end
+  end
 end
 ```
+
+The operation queue observer receives an event name and a frozen payload. A
+batch emits `:batch_started` once with `:batch_size`; each operation emits
+`:operation_started` with `:queue_duration` and the post-increment
+`:active_operations`, then `:operation_finished` with the post-decrement active
+count. It is disabled by default, has no monitoring-library dependency, and
+exceptions raised by it are ignored so telemetry cannot interrupt a request.
+Queue duration starts when the processor submits the batch to its execution
+strategy and ends as each operation begins. The active count spans concurrent
+batches in the current Ruby process; multi-process hosts should retain a PID or
+instance dimension when aggregating it. Parallel operations invoke the callback
+from worker threads, so observers should be fast and thread-safe.
 
 That's it!  Just fire up your curl, hit your endpoint with the right verb and a properly formatted request, and enjoy some batch API action.
 
