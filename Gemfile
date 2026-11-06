@@ -16,11 +16,11 @@ group :development, :test do
   gem 'rubocop-rspec', '~> 2.19'
   gem 'timecop', '~> 0.9.6'
 
-  gem 'rack-contrib', '~> 2.3'
+  gem 'rack-contrib', '~> 2.5'
   gem 'rack-test', '~> 2.1'
   gem 'rake', '~> 13.0'
   gem 'rspec', '~> 3.12'
   gem 'simplecov', '~> 0.22', require: false
-  gem 'sinatra', '~> 3.0'
+  gem 'sinatra', '~> 4.2'
   gem 'sinatra-param'
 end
