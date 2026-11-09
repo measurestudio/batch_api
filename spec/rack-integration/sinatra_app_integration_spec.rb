@@ -111,12 +111,12 @@ describe SinatraApp do
 
       it 'returns the expected headers' do
         result = JSON.parse(last_response.body)['results'][0]
-        expect(result['headers']).to include({ 'GET' => 'hello' })
+        expect(result['headers']).to include({ 'get' => 'hello' })
       end
 
       it 'verifies that the right headers were received' do
         result = JSON.parse(last_response.body)['results'][0]
-        expect(result['headers']['REQUEST_HEADERS']).to include(headerize({ 'FOO' => 'bar' }))
+        expect(result['headers']['request_headers']).to include(headerize({ 'FOO' => 'bar' }))
       end
     end
 
@@ -143,12 +143,12 @@ describe SinatraApp do
 
       it 'returns the expected headers' do
         result = JSON.parse(last_response.body)['results'][0]
-        expect(result['headers']).to include({ 'GET' => 'hello' })
+        expect(result['headers']).to include({ 'get' => 'hello' })
       end
 
       it 'verifies that the right headers were received' do
         result = JSON.parse(last_response.body)['results'][0]
-        expect(result['headers']['REQUEST_HEADERS']).to include(headerize({ 'FOO' => 'bar' }))
+        expect(result['headers']['request_headers']).to include(headerize({ 'FOO' => 'bar' }))
       end
     end
 
@@ -213,11 +213,11 @@ describe SinatraApp do
       end
 
       it 'returns the expected headers' do
-        expect(JSON.parse(last_response.body)['results'][0]['headers']).to include({ 'POST' => 'guten tag' })
+        expect(JSON.parse(last_response.body)['results'][0]['headers']).to include({ 'post' => 'guten tag' })
       end
 
       it 'verifies that the right headers were received' do
-        expect(JSON.parse(last_response.body)['results'][0]['headers']['REQUEST_HEADERS']).to include(
+        expect(JSON.parse(last_response.body)['results'][0]['headers']['request_headers']).to include(
           headerize({ 'POST' => 'guten tag' })
         )
       end

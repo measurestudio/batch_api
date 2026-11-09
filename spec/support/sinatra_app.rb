@@ -10,10 +10,10 @@ class SinatraApp < Sinatra::Base
   helpers Sinatra::Param
 
   get '/endpoint' do
-    headers['GET'] = 'hello'
+    headers['get'] = 'hello'
     # including this in the body would mess the body up
     # due to the other headers inserted
-    headers['REQUEST_HEADERS'] = header_output
+    headers['request_headers'] = header_output
     content_type :json
 
     status 422
@@ -25,10 +25,10 @@ class SinatraApp < Sinatra::Base
 
   get '/longboi' do
     sleep 0.3
-    headers['GET'] = 'hello'
+    headers['get'] = 'hello'
     # including this in the body would mess the body up
     # due to the other headers inserted
-    headers['REQUEST_HEADERS'] = header_output
+    headers['request_headers'] = header_output
     content_type :json
 
     status 422
@@ -44,8 +44,8 @@ class SinatraApp < Sinatra::Base
   end
 
   post '/endpoint' do
-    headers['POST'] = 'guten tag'
-    headers['REQUEST_HEADERS'] = header_output
+    headers['post'] = 'guten tag'
+    headers['request_headers'] = header_output
     content_type :json
     status 203
     {
